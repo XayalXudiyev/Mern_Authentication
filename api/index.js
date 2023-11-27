@@ -10,9 +10,6 @@ const app = express()
 
 app.use(express.json())
 
-app.use('/api/user', userRouter)
-app.use('/api/auth', authRouter)
-
 mongoose.connect(process.env.MONGO)
     .then((req, res) => {
         console.log('Connected to db');
@@ -25,9 +22,15 @@ app.listen(3000, () => {
     console.log("Server is runing on port 3000");
 })
 
-// const { username, email, password } = req.body;
+app.use('/api/user', userRouter)
+app.use('/api/auth', authRouter)
 
-// const newUser = new User({ username, email, password })
-
-// await newUser.save()
-// res.status(201).json("user succefully created")
+app.use((err, req, res, next) => {
+    const statusCode = err.statusCode || 500
+    const message = err.message || "Internal server error"
+    return res.status(statusCode).json({
+        success: false,
+        statusCode,
+        message,
+    })
+})
