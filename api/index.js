@@ -1,36 +1,27 @@
 import express from "express";
-import mongoose from "mongoose";
-import dotenv from 'dotenv'
-import userRouter from './routes/user.route.js'
-import authRouter from './routes/auth.route.js'
+import cors from "cors"
+import bodyParser from 'body-parser'
+import dotenv from "dotenv"
+import db from './config/db.js'
+import authRouter from './routes/auth.js'
 
 dotenv.config()
 
 const app = express()
 
-app.use(express.json())
+app.use(cors())
+app.use(bodyParser.json({limit:'30mb',extended:true}))
+app.use(bodyParser.urlencoded({limit:'30mb',extended:true}))
 
-mongoose.connect(process.env.MONGO)
-    .then((req, res) => {
-        console.log('Connected to db');
-    })
-    .catch((err) => {
-        console.log(err);
-    })
+app.use('/', authRouter)
 
-app.listen(3000, () => {
-    console.log("Server is runing on port 3000");
-})
 
-app.use('/api/user', userRouter)
-app.use('/api/auth', authRouter)
+const PORT =   5000
 
-app.use((err, req, res, next) => {
-    const statusCode = err.statusCode || 500
-    const message = err.message || "Internal server error"
-    return res.status(statusCode).json({
-        success: false,
-        statusCode,
-        message,
-    })
+
+db()
+
+
+app.listen(PORT, () => {
+    console.log("server is running", PORT)
 })

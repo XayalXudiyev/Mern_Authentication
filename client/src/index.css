@@ -3,6 +3,12 @@
 @tailwind utilities;
 
 
-body{
-    background-color: rgb(241,245,241);
+body {
+    background-color: rgb(241, 245, 241);
+}
+
+@layer components {
+    .input-style {
+        @apply border p-2 rounded-md outline-none
+    }
 }
